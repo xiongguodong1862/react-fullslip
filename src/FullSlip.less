@@ -1,0 +1,41 @@
+//隐藏滚动条
+html {
+  overflow: -moz-scrollbars-none; //firefox
+  -ms-overflow-style: none; //ie
+}
+html::-webkit-scrollbar { /*webkit内核*/
+  display: none;
+}
+
+.full-wrap {
+  overflow: hidden;
+}
+
+.full-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translate3d(0px, 0px, 0px);
+}
+.slip-navigation{
+  position: fixed;
+  top: 50%;
+  transform:translate3d(0px,-50%,0px);
+  right: 20px;
+}
+.navigation-dot{
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+.navigation-dot.active{
+  background-color: salmon;
+  box-shadow: 0 0 10px ;
+}
+.slip-item{
+  height: 100vh;
+  width: 100%;
+}
+

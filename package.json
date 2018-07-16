@@ -1,0 +1,46 @@
+{
+  "name": "react-fullslip",
+  "version": "1.0.0",
+  "description": "基于react的竖向全屏滚动插件Vertical full screen rolling plugin based on react",
+  "main": "dist/bundle.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dogXgod/fullSlip.git"
+  },
+  "keywords": [
+    "竖向滚动",
+    "全屏滚动",
+    "react",
+    "verticalRolling"
+  ],
+  "author": "XGod",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dogXgod/fullSlip/issues"
+  },
+  "homepage": "https://github.com/dogXgod/fullSlip#readme",
+  "dependencies": {
+    "react": "^16.4.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^1.0.0",
+    "less": "^3.7.1",
+    "less-loader": "^4.1.0",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.16.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
