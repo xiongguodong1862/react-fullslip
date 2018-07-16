@@ -85,21 +85,26 @@ class FullSlip extends Component {
              }}>
           {this.props.children}
         </div>
-        <div className="slip-navigation">
-          {
-            this.props.children.map((item, index) => {
-              let active = index === this.state.currentPage ? this.state.activeClass : '';
-              return (
-                <div
-                  key={index}
-                  className={`navigation-dot ${active}`}
-                  onClick={this.handleClick.bind(this, index)}
-                >
-                </div>
-              )
-            })
-          }
-        </div>
+        {
+          this.props.navigation ? (
+            <div className="slip-navigation">
+              {
+                this.props.children.map((item, index) => {
+                  let active = index === this.state.currentPage ? this.state.activeClass : '';
+                  return (
+                    <div
+                      key={index}
+                      className={`navigation-dot ${active}`}
+                      onClick={this.handleClick.bind(this, index)}
+                    >
+                    </div>
+                  )
+                })
+              }
+            </div>
+          ) : null
+        }
+
       </div>
     )
   }

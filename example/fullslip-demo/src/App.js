@@ -4,9 +4,14 @@ import {FullSlip,SlipItem} from "react-fullslip";
 
 class App extends Component {
   render() {
+    let options = {
+      navigation: true,
+      activeClass: 'active',
+      duration:2000
+    };
     return (
       <div className="App">
-        <FullSlip>
+        <FullSlip {...options}>
           <SlipItem style={{backgroundColor:'#C6E2FF'}}>
             page1
           </SlipItem>
