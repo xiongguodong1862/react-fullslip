@@ -5,9 +5,11 @@ import {FullSlip,SlipItem} from "react-fullslip";
 class App extends Component {
   render() {
     let options = {
-      navigation: true,
+      //navigation: true,
       activeClass: 'active',
-      duration:2000
+      duration:500,
+      transverse:true,
+      navImage:[require('./assets/1.jpg'),require('./assets/2.jpg'),require('./assets/3.jpg')]
     };
     return (
       <div className="App">
