@@ -25,7 +25,7 @@ let options = {
   duration:1000,              //屏幕滑动切换的时间,  默认为1000
   transverse:true,            //是否更改为横向滑动,  默认为false
   navImage:[require('./assets/1.jpg'),require('./assets/2.jpg'),require('./assets/3.jpg')]    //导航点图片,可选,默认无图片
-  arrowNav:true, //是否开启箭头导航 默认false不开启
+  arrowNav:true,              //是否开启箭头导航     默认false不开启
 };
 
 ```
