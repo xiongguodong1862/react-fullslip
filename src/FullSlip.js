@@ -17,6 +17,7 @@ class FullSlip extends Component {
   }
 
   componentWillMount() {
+    //mount前获取props状态并添加到state中
     let activeClass = this.props.activeClass ? this.props.activeClass : this.state.activeClass;
     let duration = this.props.duration ? this.props.duration : this.state.duration;
     let navigation = this.props.navigation ? this.props.navigation : this.state.navigation;
@@ -30,12 +31,27 @@ class FullSlip extends Component {
   }
 
   componentDidMount() {
+    //挂载后绑定鼠标滚轮事件
     if (document.addEventListener) {
       document.addEventListener('DOMMouseScroll', this.mouseScroll.bind(this), false);
     }
     window.onmousewheel = document.onmousewheel = this.mouseScroll.bind(this);
   }
 
+  //翻页函数 弄n=1向后翻页 n=-1向前翻页
+  scroll(n) {
+    this.setState({
+      isScroll: true,
+      currentPage: this.state.currentPage + n
+    });
+    setTimeout(() => {//动画 duration时间结束后再把状态切换为没有滑动
+      this.setState({
+        isScroll: false
+      })
+    }, this.state.duration);
+  }
+
+  //给document/window绑定的滚轮时间
   mouseScroll(e) {
     e = e || window.event;
     if (this.state.isScroll) {
@@ -45,38 +61,33 @@ class FullSlip extends Component {
       if (this.state.currentPage >= this.state.pageCount) {//边界判断
         return false;
       }
-      this.setState({
-        isScroll: true,
-        currentPage: this.state.currentPage + 1
-      });
-      setTimeout(() => {//动画 duration时间结束后再把状态切换为没有滑动
-        this.setState({
-          isScroll: false
-        })
-      }, this.state.duration);
+      this.scroll(1)
+
     } else if (e.wheelDelta > 0 || e.detail < 0) {
       if (this.state.currentPage <= 0) {
         return false;
       }
-      this.setState({
-        isScroll: true,
-        currentPage: this.state.currentPage - 1
-      });
-      setTimeout(() => {
-        this.setState({
-          isScroll: false
-        })
-      }, this.state.duration);
+      this.scroll(-1)
     }
   };
 
-  handleClick(index) {
+  //给导航点绑定点击事件
+  handleNavClick(index) {
     this.setState({
       currentPage: index
     })
   }
 
+  //给箭头绑定点击事件
+  handleArrowClick(n) {
+    if (this.state.currentPage > this.state.pageCount) {//边界判断
+      return false;
+    }
+    this.scroll(n);
+  }
+
   render() {
+    //获取数据,添加样式
     let pageHeight = this.state.pageHeight;
     let pageWidth = this.state.pageWidth;
     let transverse = this.props.transverse || false;
@@ -104,6 +115,25 @@ class FullSlip extends Component {
     };
     let navigation = this.props.navigation !== undefined ? this.props.navigation : true;
     let navImage = this.props.navImage ? this.props.navImage : [];
+    let arrow = this.props.arrowNav !== undefined ? this.props.arrowNav : false;
+    let arrowLastStyle = transverse ? {
+      left: '50px',
+      top: '50%',
+      transform: 'translate3d(0,-50%,0) rotate(45deg)',
+    } : {
+      top:'30px',
+      left:'50%',
+      transform:'translate3d(-50%,0,0) rotate(135deg)'
+    };
+    let arrowNextStyle = transverse ? {
+      right: '50px',
+      top: '50%',
+      transform: 'translate3d(0,-50%,0) rotate(45deg)',
+    } : {
+      bottom:'30px',
+      left:'50%',
+      transform:'translate3d(-50%,0,0) rotate(135deg)'
+    };
     return (
       <div className='full-wrap' style={{...this.props.style}}>
         <div className='full-container'
@@ -120,12 +150,34 @@ class FullSlip extends Component {
                     <div
                       key={index}
                       className={`navigation-dot ${active}`}
-                      onClick={this.handleClick.bind(this, index)}
+                      onClick={this.handleNavClick.bind(this, index)}
                     >
                       {navImage.length > 0 ? <img src={navImage[index]} alt=""/> : null}
                     </div>
                   )
                 })
+              }
+            </div>
+          ) : null
+        }
+        {
+          arrow ? (
+            <div className='slip-arrow'>
+              {
+                this.state.currentPage === 0 ?
+                  null :
+                  <div style={arrowLastStyle}
+                       className="arrow-last"
+                       onClick={this.handleArrowClick.bind(this, -1)}>
+                  </div>
+              }
+              {
+                this.state.currentPage === this.state.pageCount ?
+                  null :
+                  <div style={arrowNextStyle}
+                       className="arrow-next"
+                       onClick={this.handleArrowClick.bind(this, 1)}>
+                  </div>
               }
             </div>
           ) : null

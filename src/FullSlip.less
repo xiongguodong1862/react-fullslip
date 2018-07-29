@@ -3,6 +3,7 @@ html {
   overflow: -moz-scrollbars-none; //firefox
   -ms-overflow-style: none; //ie
 }
+
 html::-webkit-scrollbar { /*webkit内核*/
   display: none;
 }
@@ -17,24 +18,46 @@ html::-webkit-scrollbar { /*webkit内核*/
   position: relative;
   transform: translate3d(0px, 0px, 0px);
 }
-.navigation-dot{
+
+.navigation-dot {
   width: 30px;
   height: 30px;
   background-color: #ccc;
   border-radius: 50%;
   margin: 20px;
-  img{
+  img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
   }
 }
-.navigation-dot.active{
+
+.navigation-dot.active {
   background-color: salmon;
-  box-shadow: 0 0 10px ;
+  box-shadow: 0 0 10px;
 }
-.slip-item{
+
+.slip-item {
   height: 100vh;
   width: 100%;
 }
 
+.slip-arrow {
+  .arrow-last {
+    width: 20px;
+    height: 20px;
+    border-bottom: 5px solid rgba(0, 0, 0, .5);
+    border-left: 5px solid rgba(0, 0, 0, .5);
+    position: fixed;
+  }
+  .arrow-next {
+    width: 20px;
+    height: 20px;
+    border-top: 5px solid gray;
+    border-right: 5px solid gray;
+    position: fixed;
+  }
+  .arrow-last:hover,.arrow-next:hover{
+    border-color: salmon;
+  }
+}
