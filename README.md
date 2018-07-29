@@ -11,6 +11,10 @@
 
 新增了导航点可添加自定义图片的参数。
 
+### 依赖
+
+- react
+
 ### 安装
 `npm install react-fullslip`
 
