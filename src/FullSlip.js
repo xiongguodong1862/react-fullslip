@@ -121,18 +121,18 @@ class FullSlip extends Component {
       top: '50%',
       transform: 'translate3d(0,-50%,0) rotate(45deg)',
     } : {
-      top:'30px',
-      left:'50%',
-      transform:'translate3d(-50%,0,0) rotate(135deg)'
+      top: '30px',
+      left: '50%',
+      transform: 'translate3d(-50%,0,0) rotate(135deg)'
     };
     let arrowNextStyle = transverse ? {
       right: '50px',
       top: '50%',
       transform: 'translate3d(0,-50%,0) rotate(45deg)',
     } : {
-      bottom:'30px',
-      left:'50%',
-      transform:'translate3d(-50%,0,0) rotate(135deg)'
+      bottom: '30px',
+      left: '50%',
+      transform: 'translate3d(-50%,0,0) rotate(135deg)'
     };
     return (
       <div className='full-wrap' style={{...this.props.style}}>
@@ -188,15 +188,12 @@ class FullSlip extends Component {
 }
 
 class SlipItem extends Component {
-  constructor() {
-    super();
-    this.state = {}
-  }
 
   render() {
+    const _this = this;
     return (
       <div className='slip-item' style={{...this.props.style}}>
-        {this.props.children}
+        {_this.props.children}
       </div>
     )
   }
