@@ -4,8 +4,8 @@ module.exports = {
   mode:'production',
   entry: './src/index.js',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'react-fullslip.min.js',
+    path: path.resolve(__dirname, 'lib'),
     libraryTarget: 'commonjs2'
   },
   module: {

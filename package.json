@@ -41,6 +41,5 @@
     "webpack": "^4.16.1",
     "webpack-cli": "^3.0.8",
     "webpack-node-externals": "^1.7.2"
-  },
-  "private": true
+  }
 }
