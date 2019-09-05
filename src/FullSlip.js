@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import './FullSlip.less'
+import './index.less'
 
 class FullSlip extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       isScroll: false,//是否在滑动
       pageCount: 0,//余下未显示的页面数量
@@ -16,27 +16,29 @@ class FullSlip extends Component {
     }
   }
 
-  componentWillMount() {
-    //mount前获取props状态并添加到state中
-    let activeClass = this.props.activeClass ? this.props.activeClass : this.state.activeClass;
-    let duration = this.props.duration ? this.props.duration : this.state.duration;
-    let navigation = this.props.navigation ? this.props.navigation : this.state.navigation;
+  componentDidMount() {
+    let {activeClass,duration,navigation}=this.props;
+    //获取props状态并添加到state中
+    activeClass = activeClass ? activeClass : this.state.activeClass;
+    duration = duration ? duration : this.state.duration;
+    navigation = navigation ? navigation : this.state.navigation;
     let len = this.props.children.length;
     this.setState({
-      activeClass,
+      activeClass:activeClass,
       duration,
       navigation,
       pageCount: len - 1
-    })
-  }
-
-  componentDidMount() {
+    });
     //挂载后绑定鼠标滚轮事件
     if (document.addEventListener) {
       document.addEventListener('DOMMouseScroll', this.mouseScroll.bind(this), false);
     }
     window.onmousewheel = document.onmousewheel = this.mouseScroll.bind(this);
   }
+
+  resize = () => {
+
+  };
 
   //翻页函数 弄n=1向后翻页 n=-1向前翻页
   scroll(n) {
