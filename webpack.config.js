@@ -1,7 +1,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 module.exports = {
-  mode:'production',
+  mode: 'production',
   entry: './src/index.js',
   output: {
     filename: 'react-fullslip.min.js',
@@ -12,8 +12,14 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        use: {
+          loader:'babel-loader',
+          options: {
+            presets: ['env', 'react', 'stage-0']
+          }
+        },
+        exclude: /node_modules/,
+
       },
       {
         test: /\.less$/,

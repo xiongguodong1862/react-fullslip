@@ -19,12 +19,30 @@ html::-webkit-scrollbar { /*webkit内核*/
   transform: translate3d(0px, 0px, 0px);
 }
 
+.slip-navigation {
+  position: fixed;
+
+  &.horizontal {
+    display: flex;
+    bottom: 30px;
+    transform: translate3d(-50%, 0px, 0px);
+    left: 50%;
+  }
+
+  &.vertical {
+    top: 50%;
+    right: 20px;
+    transform: translate3d(0px, -50%, 0px);
+  }
+}
+
 .navigation-dot {
   width: 30px;
   height: 30px;
-  background-color: #ccc;
+  background: #ccc;
   border-radius: 50%;
   margin: 20px;
+  transition: all .2s;
   img {
     width: 100%;
     height: 100%;
@@ -49,15 +67,39 @@ html::-webkit-scrollbar { /*webkit内核*/
     border-bottom: 5px solid rgba(0, 0, 0, .5);
     border-left: 5px solid rgba(0, 0, 0, .5);
     position: fixed;
+    transition: all .2s;
+    &.top{
+      top: 30px;
+      left: 50%;
+      transform: translate3d(-50%,0,0) rotate(135deg);
+    }
+    &.left{
+      left: 50px;
+      top: 50%;
+      transform: translate3d(0,-50%,0) rotate(45deg);
+    }
   }
+
   .arrow-next {
     width: 20px;
     height: 20px;
     border-top: 5px solid gray;
     border-right: 5px solid gray;
     position: fixed;
+    transition: all .2s;
+    &.bottom{
+      bottom: 30px;
+      left: 50%;
+      transform: translate3d(-50%,0,0) rotate(135deg);
+    }
+    &.right{
+      right: 50px;
+      top: 50%;
+      transform: translate3d(0,-50%,0) rotate(45deg);
+    }
   }
-  .arrow-last:hover,.arrow-next:hover{
+
+  .arrow-last:hover, .arrow-next:hover {
     border-color: salmon;
   }
 }
