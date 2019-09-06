@@ -1,207 +1,227 @@
-import React, {Component} from 'react'
-import './index.less'
+import React from 'react';
+import throttle from './utils/throttle';
+import './index.less';
 
-class FullSlip extends Component {
+class FullSlip extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isScroll: false,//是否在滑动
-      pageCount: 0,//余下未显示的页面数量
+      isScrolling: false,//是否在滑动
+      pageCount: 0,//页面数量
       currentPage: 0,//当前页面
-      pageHeight: document.documentElement.clientHeight,//页面高度
-      pageWidth: document.documentElement.clientWidth,
+      dimensions: {//页面尺寸
+        height: 0,
+        width: 0,
+      },
+      offset: 0,//纵向滚动时，插件上方内容的距离
+
       activeClass: 'active',
       duration: 1000,
-      navigation: true
-    }
+      navigation: true,
+      transverse: false,
+      navImage: [],
+      arrowNav: false
+    };
   }
 
   componentDidMount() {
-    let {activeClass,duration,navigation}=this.props;
-    //获取props状态并添加到state中
-    activeClass = activeClass ? activeClass : this.state.activeClass;
-    duration = duration ? duration : this.state.duration;
-    navigation = navigation ? navigation : this.state.navigation;
-    let len = this.props.children.length;
-    this.setState({
-      activeClass:activeClass,
-      duration,
-      navigation,
-      pageCount: len - 1
-    });
-    //挂载后绑定鼠标滚轮事件
-    if (document.addEventListener) {
-      document.addEventListener('DOMMouseScroll', this.mouseScroll.bind(this), false);
+    const {isScrolling} = this.props;
+    this.init();
+    window.addEventListener("resize", throttle(this.resize, 100, true), false);
+    if (!isScrolling) {
+      this.container.addEventListener('DOMMouseScroll', this.mouseScroll, false);
+      this.container.addEventListener('mousewheel', this.mouseScroll, false);
+    } else {
+      this.container.removeEventListener('DOMMouseScroll', this.mouseScroll, false);
+      this.container.removeEventListener('mousewheel', this.mouseScroll, false);
     }
-    window.onmousewheel = document.onmousewheel = this.mouseScroll.bind(this);
   }
 
-  resize = () => {
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {transverse} = this.state;
+    if (!transverse) {//仅在纵向才启用滚动条滚动到指定位置才实现全屏
+      if (!prevState.offset || prevState.offset !== this.container.offsetTop) {
+        this.setState({
+          offset: this.container.offsetTop,
+          navigation: false,
+          arrowNav: false
+        })
+      }
+    }
+  }
 
+  /**
+   * 初始化，合并options
+   */
+  init = () => {
+    const {navigation, activeClass, duration, transverse, navImage, arrowNav, children} = this.props;
+    const dimensions = {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    };
+    this.setState({
+      ...this.state,
+      navigation: navigation !== undefined ? navigation : true,
+      activeClass: activeClass !== undefined ? activeClass : 'active',
+      duration: duration !== undefined ? duration : 1000,
+      transverse: transverse !== undefined ? transverse : false,
+      navImage: navImage !== undefined ? navImage : [],
+      arrowNav: arrowNav !== undefined ? arrowNav : false,
+      dimensions,
+      pageCount: children.length
+    })
   };
 
-  //翻页函数 弄n=1向后翻页 n=-1向前翻页
-  scroll(n) {
+  /**
+   * 页面大小改变
+   */
+  resize = () => {
+    const dimensions = {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    };
     this.setState({
-      isScroll: true,
-      currentPage: this.state.currentPage + n
+      dimensions
+    })
+  };
+
+  /**
+   * 翻页动画
+   * @param n  1 翻下一页   -1 翻前一页
+   */
+  scroll = (n) => {
+    const {duration, currentPage} = this.state;
+    this.setState({
+      isScrolling: true,
+      currentPage: currentPage + n
     });
-    setTimeout(() => {//动画 duration时间结束后再把状态切换为没有滑动
+    setTimeout(() => {//动画 duration时间结束后再把状态切换为没有滚动
+      this.setState({isScrolling: false})
+    }, duration);
+  };
+
+  /**
+   * 翻页逻辑
+   * @param e
+   * @returns {boolean}
+   */
+  mouseScroll = (e) => {
+    const {offset, isScrolling, currentPage, pageCount, dimensions} = this.state;
+    const {navigation, arrowNav} = this.props;
+    const doc = document;
+    const t = doc.documentElement.scrollTop || doc.body.scrollTop;
+    if (t >= offset) {
+      if(currentPage!==0){//在第二页之后的页面向上滚动的时候，阻止默认行为
+        e.preventDefault();
+      }
+      //在进入插件后才根据用户配置展示 navigation和arrowNav
       this.setState({
-        isScroll: false
-      })
-    }, this.state.duration);
-  }
-
-  //给document/window绑定的滚轮时间
-  mouseScroll(e) {
-    e = e || window.event;
-    if (this.state.isScroll) {
-      return false;//如果正在滚动,取消事件
-    }
-    if (e.wheelDelta < 0 || e.detail > 0) {//小于0说明向下滚动
-      if (this.state.currentPage >= this.state.pageCount) {//边界判断
-        return false;
+        navigation: navigation !== undefined ? navigation : true,
+        arrowNav: arrowNav !== undefined ? arrowNav : false,
+      });
+      if (isScrolling) {
+        return false; //如果正在滚动,取消事件
       }
-      this.scroll(1)
-
-    } else if (e.wheelDelta > 0 || e.detail < 0) {
-      if (this.state.currentPage <= 0) {
-        return false;
+      if (e.wheelDelta < 0 || e.detail > 0) {//wheelDelta<0(ie和早期chrome),detail>0(firefox)说明向下滚动
+        if (currentPage >= pageCount - 1) {//边界判断
+          return false;
+        }
+        this.scroll(1)
+      } else if (e.wheelDelta > 0 || e.detail < 0) {
+        if (currentPage <= 0) {
+          return false;
+        }
+        this.scroll(-1)
+      } else {
+        return false
       }
-      this.scroll(-1)
+    } else {
+      this.setState({
+        navigation: false,
+        arrowNav: false
+      });
     }
+  };
+
+  getContainerStyles = () => {
+    const {dimensions: {width, height}, pageCount, currentPage, duration, transverse} = this.state;
+    return transverse ? {
+      transform: `translate3d(${-currentPage * width}px,0px,0px)`,
+      transition: `all ${duration}ms ease`,
+      display: 'flex',
+      flex: 1,
+      width: pageCount * width + 'px'
+    } : {
+      transform: `translate3d(0px,${-currentPage * height}px,0px)`,
+      transition: `all ${duration}ms ease`
+    };
   };
 
   //给导航点绑定点击事件
-  handleNavClick(index) {
-    this.setState({
-      currentPage: index
-    })
-  }
+  handleNavClick = (index) => {
+    this.setState({currentPage: index})
+  };
 
   //给箭头绑定点击事件
-  handleArrowClick(n) {
-    if (this.state.currentPage > this.state.pageCount) {//边界判断
-      return false;
-    }
+  handleArrowClick = (n) => {
     this.scroll(n);
-  }
+  };
 
   render() {
-    //获取数据,添加样式
-    let pageHeight = this.state.pageHeight;
-    let pageWidth = this.state.pageWidth;
-    let transverse = this.props.transverse || false;
-    let containerStyle = transverse ? {
-      transform: `translate3d(${-this.state.currentPage * pageWidth}px,0px,0px)`,
-      transition: `all ${this.state.duration}ms ease`,
-      display: 'flex',
-      flex: 1,
-      width: this.props.children.length * pageWidth + 'px'
-    } : {
-      transform: `translate3d(0px,${-this.state.currentPage * pageHeight}px,0px)`,
-      transition: `all ${this.state.duration}ms ease`
-    };
-    let navigationStyle = transverse ? {
-      position: "fixed",
-      bottom: "30px",
-      transform: 'translate3d(-50%,0px,0px)',
-      left: '50%',
-      display: 'flex'
-    } : {
-      position: 'fixed',
-      top: '50%',
-      transform: 'translate3d(0px,-50%,0px)',
-      right: '20px'
-    };
-    let navigation = this.props.navigation !== undefined ? this.props.navigation : true;
-    let navImage = this.props.navImage ? this.props.navImage : [];
-    let arrow = this.props.arrowNav !== undefined ? this.props.arrowNav : false;
-    let arrowLastStyle = transverse ? {
-      left: '50px',
-      top: '50%',
-      transform: 'translate3d(0,-50%,0) rotate(45deg)',
-    } : {
-      top: '30px',
-      left: '50%',
-      transform: 'translate3d(-50%,0,0) rotate(135deg)'
-    };
-    let arrowNextStyle = transverse ? {
-      right: '50px',
-      top: '50%',
-      transform: 'translate3d(0,-50%,0) rotate(45deg)',
-    } : {
-      bottom: '30px',
-      left: '50%',
-      transform: 'translate3d(-50%,0,0) rotate(135deg)'
-    };
+    const {dimensions: {width, height}, navigation, arrowNav, navImage, currentPage, pageCount, transverse, activeClass} = this.state;
+    const {children, style} = this.props;
+    const containerStyle = this.getContainerStyles();
+
     return (
-      <div className='full-wrap' style={{...this.props.style}}>
-        <div className='full-container'
-             style={containerStyle}>
-          {this.props.children}
+      <div ref={ref => this.container = ref} className='full-wrap' style={{width, height, ...style}}>
+        <div className='full-container' style={containerStyle}>
+          {children}
         </div>
         {
-          navigation ? (
-            <div className="slip-navigation" style={navigationStyle}>
+          navigation && (
+            <div className={`slip-navigation ${transverse ? 'horizontal' : 'vertical'}`}>
               {
-                this.props.children.map((item, index) => {
-                  let active = index === this.state.currentPage ? this.state.activeClass : '';
+                children.map((item, index) => {
+                  const active = index === currentPage ? activeClass : '';
                   return (
                     <div
                       key={index}
-                      className={`navigation-dot ${active}`}
-                      onClick={this.handleNavClick.bind(this, index)}
+                      className={`${active} navigation-dot`}
+                      onClick={() => this.handleNavClick(index)}
                     >
-                      {navImage.length > 0 ? <img src={navImage[index]} alt=""/> : null}
+                      {navImage && navImage.length > 0 && <img src={navImage[index]} alt=""/>}
                     </div>
                   )
                 })
               }
             </div>
-          ) : null
+          )
         }
         {
-          arrow ? (
+          arrowNav && (
             <div className='slip-arrow'>
               {
-                this.state.currentPage === 0 ?
-                  null :
-                  <div style={arrowLastStyle}
-                       className="arrow-last"
-                       onClick={this.handleArrowClick.bind(this, -1)}>
+                currentPage > 0 && (
+                  <div
+                    className={`arrow-last arrow ${transverse ? 'left' : 'top'}`}
+                    onClick={() => this.handleArrowClick(-1)}>
                   </div>
+                )
               }
               {
-                this.state.currentPage === this.state.pageCount ?
-                  null :
-                  <div style={arrowNextStyle}
-                       className="arrow-next"
-                       onClick={this.handleArrowClick.bind(this, 1)}>
+                currentPage < pageCount - 1 && (
+                  <div
+                    className={`arrow-next arrow ${transverse ? 'right' : 'bottom'}`}
+                    onClick={() => this.handleArrowClick(1)}>
                   </div>
+                )
               }
             </div>
-          ) : null
+          )
         }
       </div>
-    )
+    );
   }
 }
 
-class SlipItem extends Component {
-
-  render() {
-    const _this = this;
-    return (
-      <div className='slip-item' style={{...this.props.style}}>
-        {_this.props.children}
-      </div>
-    )
-  }
-}
-
-export {
-  FullSlip,
-  SlipItem
-} ;
+export default FullSlip;
