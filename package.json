@@ -2,9 +2,9 @@
   "name": "react-fullslip",
   "version": "1.2.1",
   "description": "基于react的竖向全屏滚动插件Vertical full screen rolling plugin based on react",
-  "main": "dist/bundle.js",
+  "main": "index.js",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "build": "webpack -p"
