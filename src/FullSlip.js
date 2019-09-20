@@ -38,15 +38,12 @@ class FullSlip extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const {transverse} = this.state;
-    if (!transverse) {//仅在纵向才启用滚动条滚动到指定位置才实现全屏
-      if (!prevState.offset || prevState.offset !== this.container.offsetTop) {
-        this.setState({
-          offset: this.container.offsetTop,
-          navigation: false,
-          arrowNav: false
-        })
-      }
+    if (!prevState.offset || prevState.offset !== this.container.offsetTop) {
+      this.setState({
+        offset: this.container.offsetTop,
+        navigation: false,
+        arrowNav: false
+      })
     }
   }
 
@@ -106,20 +103,23 @@ class FullSlip extends React.Component {
    * @returns {boolean}
    */
   mouseScroll = (e) => {
-    const {offset, isScrolling, currentPage, pageCount, dimensions} = this.state;
+    const {offset, isScrolling, currentPage, pageCount} = this.state;
     const {navigation, arrowNav} = this.props;
     const doc = document;
     const t = doc.documentElement.scrollTop || doc.body.scrollTop;
     if (t >= offset) {
-      if(currentPage!==0){//在第二页之后的页面向上滚动的时候，阻止默认行为
+      if (currentPage !== 0) {//在第二页之后的页面向上滚动的时候，阻止默认行为
         e.preventDefault();
       }
-      //在进入插件后才根据用户配置展示 navigation和arrowNav
-      this.setState({
-        navigation: navigation !== undefined ? navigation : true,
-        arrowNav: arrowNav !== undefined ? arrowNav : false,
-      });
+      if (t + 20 >= offset) {
+        //在进入插件后才根据用户配置展示 navigation和arrowNav
+        this.setState({
+          navigation: navigation !== undefined ? navigation : true,
+          arrowNav: arrowNav !== undefined ? arrowNav : false,
+        });
+      }
       if (isScrolling) {
+
         return false; //如果正在滚动,取消事件
       }
       if (e.wheelDelta < 0 || e.detail > 0) {//wheelDelta<0(ie和早期chrome),detail>0(firefox)说明向下滚动
